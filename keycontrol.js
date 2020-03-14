@@ -9,15 +9,32 @@ let v
         this.repeatKeystrokeTime = 32
         this.isEnteringValue = false
         this.valueBuffer = ''
-        this.incs = [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]
 
         const getCurKey = () => this.vars[this.cur].key
         const getCurVal = () => this[getCurKey()]
         const setCurVal = val => (this[getCurKey()] = val)
         const getCurInc = () => this.vars[this.cur].inc
+        const getCurIncPow10 = () => parseFloat(Math.pow(10, getCurInc()).toFixed(Math.abs(getCurInc())))
         const setCurInc = inc => (this.vars[this.cur].inc = inc)
+        const getOtherVars = () => {
+            let str = ''
+            const a = this.vars.slice(0, this.cur)
+            const b = this.vars.slice(this.cur + 1)
+            b.forEach(el => (str += el.key + ' '))
+            a.forEach(el => (str += el.key + ' '))
+            return str
+        }
+        const print = () => {
+            console.clear()
+            console.log(getCurKey(), getCurVal(), ' | ', getOtherVars())
+            console.log(`(${getCurIncPow10()})`)
+        }
+        const printEnteringValue = () => {
+            console.clear()
+            console.log(`${getCurKey()}: ${this.valueBuffer}`)
+        }
 
-        this.add = (key, val, inc = 1) => {
+        this.add = (key, val, inc = 0) => {
             Object.defineProperty(this, key, { value: val, writable: true })
             this.vars.push({ key, inc })
         }
@@ -32,39 +49,40 @@ let v
                     } else {
                         this.cooldown = this.repeatKeystrokeTime
                     }
-                    let key, val, inc
-                    let str, barf, front, back
+
                     switch (keyCode) {
-                        case 74: // j
-                            this.cur++
-                            if (this.cur >= this.vars.length) {
-                                this.cur = 0
-                            }
-                            key = this.vars[this.cur].key
-                            val = this[key]
-                            console.clear()
-                            console.log(key, val)
-                            break
-                        case 75: // k
+                        case 72: { // h
                             this.cur--
                             if (this.cur < 0) {
                                 this.cur = this.vars.length - 1
                             }
-                            key = this.vars[this.cur].key
-                            val = this[key]
-                            console.clear()
-                            console.log(key, val)
+                            print()
                             break
-                        case 72: // h
-                            setCurVal(getCurVal() - getCurInc())
-                            console.clear()
-                            console.log(getCurKey(), getCurVal())
+                        }
+                        case 76: { // l
+                            this.cur++
+                            if (this.cur >= this.vars.length) {
+                                this.cur = 0
+                            }
+                            print()
                             break
-                        case 76: // l
-                            setCurVal(getCurVal() + getCurInc())
-                            console.clear()
-                            console.log(getCurKey(), getCurVal())
+                        }
+                        case 74: { // j
+                            const curVal = getCurVal()
+                            const curInc = getCurInc()
+                            const newVal = parseFloat((curVal - Math.pow(10, curInc)).toFixed(Math.abs(curInc)))
+                            setCurVal(newVal)
+                            print()
                             break
+                        }
+                        case 75: { // k
+                            const curVal = getCurVal()
+                            const curInc = getCurInc()
+                            const newVal = parseFloat((curVal + Math.pow(10, curInc)).toFixed(Math.abs(curInc)))
+                            setCurVal(newVal)
+                            print()
+                            break
+                        }
                         case 48: // 0 - 9
                         case 49:
                         case 50:
@@ -74,71 +92,47 @@ let v
                         case 54:
                         case 55:
                         case 56:
-                        case 57:
+                        case 57: {
                             this.valueBuffer += keyCode - 48
-                            console.clear()
-                            console.log(`Entering value for ${getCurKey()}`)
-                            console.log(this.valueBuffer)
+                            printEnteringValue()
                             break
-                        case 190:
+                        }
+                        case 190: {
                             if (this.valueBuffer.indexOf('.') === -1) {
                                 this.valueBuffer += '.'
                             }
-                            console.clear()
-                            console.log(`Entering value for ${getCurKey()}`)
-                            console.log(this.valueBuffer)
+                            printEnteringValue()
                             break
-                        case 8: // backspace
+                        }
+                        case 8: { // backspace
                             const newLength = this.valueBuffer.length - 1
                             this.valueBuffer = this.valueBuffer.substr(0, newLength)
-                            console.clear()
-                            console.log(`Entering value for ${getCurKey()}`)
-                            console.log(this.valueBuffer)
+                            printEnteringValue()
                             break
-                        case 13: // enter
+                        }
+                        case 13: { // enter
                             if (this.valueBuffer.length) {
                                 val = parseFloat(this.valueBuffer)
                                 this.valueBuffer = ''
                                 setCurVal(val)
-                                console.clear()
-                                console.log(getCurKey(), getCurVal())
+                                print()
                             }
                             break
-                        case 69: // e
-                            str = getCurInc().toString()
-                            barf = str.split('.')
-                            front = barf[0]
-                            back = barf[1]
-                            str = front.substr(0, front.length-1) + '.' + front[front.length - 1] + back
-                            inc = parseFloat(str)
-                            // inc = getCurInc() / 10
-                            inc = inc || 1
-                            setCurInc(inc)
-                            console.clear()
-                            console.log(getCurKey(), getCurVal(), getCurInc())
+                        }
+                        case 69: { // e
+                            setCurInc(getCurInc() - 1)
+                            print()
                             break
-                        case 82: // r
-                            str = getCurInc().toString()
-                            barf = str.split('.')
-                            front = barf[0]
-                            back = barf[1]
-                            if (!back) {
-                                front += 0
-                                back = ''
-                            }
-                            str = front + back[0] + '.' + back.substr(1, back.length)
-                            // str = front.substr(0, front.length-1) + '.' + front[front.length - 1] + back
-                            inc = parseFloat(str)
-                            // inc = getCurInc() * 10
-                            inc = inc || 1
-                            setCurInc(inc)
-                            console.clear()
-                            console.log(getCurKey(), getCurVal(), getCurInc())
+                        }
+                        case 82: { // r
+                            setCurInc(getCurInc() + 1)
+                            print()
                             break
-                        case 87: // w
-                            console.clear()
-                            console.log(getCurKey(), getCurVal(), getCurInc())
+                        }
+                        case 87: { // w
+                            print()
                             break
+                        }
                     }
                 }
             } else {
