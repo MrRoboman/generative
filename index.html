@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="p5.min.js"></script>
+    <script src="keycontrol.js"></script>
+    <title>Generative Art</title>
+  </head>
+  <body>
+    <div id="links"></div>
+    <script>
+      // function setup() {
+      //     createCanvas(500, 500)
+      //     background(100)
+      //     rect(10, 10, 10, 10)
+      // }
+      // function draw() {}
+      // function clickbox() {
+      //     console.log('fart')
+      // }
+      // const links = [
+      //     'box',
+      //     'circle',
+      // ]
+      // links.forEach(link => {
+      //     const a = document.createElement('a')
+      //     a.innerText = link
+      //     a.href = '#'
+      //     a.onclick = () => {
+      //         const script = document.createElement('SCRIPT')
+      //         script.src = link + '.js'
+      //         document.getElementById('links').appendChild(script)
+      //     }
+      //     document.getElementById('links').appendChild(a)
+      // })
+      // const obj = {}
+      // Object.defineProperty(obj, 'fart', {
+      //     get: () => 'face'
+      // })
+      // console.log(obj.fart)
+      // function V() {
+      //   this.i = 0;
+      //   this.keys = [];
+      //   this.cooldown = 0;
+      //   this.firstKey = 200;
+
+      //   this.add = (key, val) => {
+      //     Object.defineProperty(this, key, {
+			// value: val,
+			// writable: true,
+      //     });
+      //     this.keys.push(key);
+      //   };
+
+      //   this.input = () => {
+      //     this.cooldown -= deltaTime;
+      //     if (this.cooldown < 0) {
+      //       this.cooldown = 0;
+      //     }
+      //     if (keyIsPressed) {
+      //       if (this.cooldown === 0) {
+      //         if (keyCode === 74) {
+			// 	  this.i++
+			// 	  if (this.i >= this.keys.length){ 
+			// 		  this.i = 0
+			// 	  }
+      //           const key = this.keys[this.i];
+			// 	const val = this[key];
+			// 	// console.clear()
+      //           console.log(key, val);
+      //           this.cooldown = this.firstKey;
+			//   }
+			//   if (keyCode == 75) {
+			// 	  console.clear()
+			// 	  console.table(this.keys.reduce((acc, key) => {
+			// 		return {
+			// 			...acc,
+			// 			[key]: this[key],
+			// 		}
+			// 	  }, {}))
+			//   }
+      //       }
+      //     } else {
+      //       this.cooldown = 0;
+      //     }
+      //   };
+      // }
+      // const v = new V();
+
+	  v.add("fart", 5);
+    v.add('face', 90)
+    v.add('nerd', 20)
+
+      function setup() {
+        createCanvas(500, 500);
+        background(200);
+      }
+      function draw() {
+        v.input();
+      }
+      // const vars = {
+      //     add: (name, val) => {
+      //         Object.defineProperty(this, name, {
+      //             get: () => this.name,
+      //             set: val => this.name = val,
+      //         })
+      //         this.name = val
+      //         console.log(this.name)
+      //     },
+      // }
+      // vars.add('x', 6)
+      // console.log(vars.x)
+    </script>
+  </body>
+</html>
