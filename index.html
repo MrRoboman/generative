@@ -11,18 +11,51 @@
     <div id="links"></div>
     <script>
 
+      let forward = true
+      let segment, mid
+
       function setup() {
-        createCanvas(500, 500);
-        background(200);
+        createCanvas(PI * 200, 200);
 
-        v.add('x', width / 2)
-        v.add('y', height / 2)
-        v.add('r', 50)
+
+        v.add('background', 200)
+        v.add('h', 40)
+        v.add('rate', 0.0001)
+        v.add('n', 1.1023, -4, {min: 0.001})
+        v.add('max', 1.109, -4)
+        v.add('min', 1.0958, -4)
+        v.add('t', 1.9, -1)
+        v.add('r', 10)
+        v.add('forw', 0)
       }
-
+      let dots = []
       function draw() {
         v.input();
-        circle(v.x, v.y, v.r)
+        background(v.background)
+        animate()
+
+        for (let i = 0; i < width + v.r; i += v.n) {
+          let x = i
+          if (!forward) x = width - x
+          let y = height / 2 + sin(i * v.t) * v.h
+          const r = v.r
+          circle(x, y, r)
+        }
+      }
+
+      function animate() {
+        if (forward) {
+          v.n += v.rate
+        } else {
+          v.n -= v.rate
+        }
+
+        if (v.n > v.max) {
+          forward = false
+        }
+        if (v.n < v.min) {
+          forward = true
+        }
       }
     </script>
   </body>
