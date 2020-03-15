@@ -10,6 +10,7 @@ let v
         this.isEnteringValue = false
         this.valueBuffer = ''
 
+        const getCurOpt = () => this.vars[this.cur].opt
         const getCurKey = () => this.vars[this.cur].key
         const getCurVal = () => this[getCurKey()]
         const setCurVal = val => (this[getCurKey()] = val)
@@ -34,9 +35,9 @@ let v
             console.log(`${getCurKey()}: ${this.valueBuffer}`)
         }
 
-        this.add = (key, val, inc = 0) => {
+        this.add = (key, val, inc = 0, opt = {}) => {
             Object.defineProperty(this, key, { value: val, writable: true })
-            this.vars.push({ key, inc })
+            this.vars.push({ key, inc, opt })
         }
 
         this.input = () => {
@@ -70,7 +71,14 @@ let v
                         case 74: { // j
                             const curVal = getCurVal()
                             const curInc = getCurInc()
-                            const newVal = parseFloat((curVal - Math.pow(10, curInc)).toFixed(Math.abs(curInc)))
+                            let newVal = parseFloat((curVal - Math.pow(10, curInc)).toFixed(Math.abs(curInc)))
+                            const { min, max } = getCurOpt()
+                            if (min !== undefined) {
+                                newVal = Math.max(newVal, min)
+                            }
+                            if (max !== undefined) {
+                                newVal = Math.min(newVal, max)
+                            }
                             setCurVal(newVal)
                             print()
                             break
@@ -78,7 +86,14 @@ let v
                         case 75: { // k
                             const curVal = getCurVal()
                             const curInc = getCurInc()
-                            const newVal = parseFloat((curVal + Math.pow(10, curInc)).toFixed(Math.abs(curInc)))
+                            let newVal = parseFloat((curVal + Math.pow(10, curInc)).toFixed(Math.abs(curInc)))
+                            const { min, max } = getCurOpt()
+                            if (min !== undefined) {
+                                newVal = Math.max(newVal, min)
+                            }
+                            if (max !== undefined) {
+                                newVal = Math.min(newVal, max)
+                            }
                             setCurVal(newVal)
                             print()
                             break
