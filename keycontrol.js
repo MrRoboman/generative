@@ -148,6 +148,10 @@ let v
                             print()
                             break
                         }
+                        case 67: { // c
+                            // saveCanvas('art', 'png')
+                            break
+                        }
                     }
                 }
             } else {

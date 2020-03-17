@@ -12,71 +12,89 @@
     <div id="links"></div>
     <script>
 
-      const capturer = new CCapture({ format: 'webm', framerate: 30, verbose:false })
-      function keyPressed() {
-        console.log('stop')
-        // capturer.stop()
-        // capturer.save()
-      }
+      let seed = Date.now()
+      
+      let rows = 16
+      let cols = 16
+      let t = 1
 
-      let forward = true
-      let segment, mid
-      let canvas
-      let frame = 0
+      v.add('rate', .08, -3)
+      v.add('particles', 20)
+      v.add('force', 1)
+      v.add('radius', 40)
+
+      let parts = []
+      let colWidth, rowHeight
+
+      let imgs = []
+      let diameter = 60
+
+      function preload() {
+        imgs.push(loadImage('assets/ooo.png'))
+        imgs.push(loadImage('assets/troll.png'))
+        imgs.push(loadImage('assets/tongue.png'))
+      }
 
       function setup() {
-        canvas = createCanvas(PI * 200, 200);
+        randomSeed(seed)
+        noiseSeed(seed)
 
+        createCanvas(500, 500)
+        background(255)
 
-        v.add('background', 200)
-        v.add('h', 40)
-        v.add('rate', 0.0001)
-        v.add('n', 1.185, -4, {min: 0.001})
-        v.add('t', 5, -1)
-        v.add('r', 10)
-        v.add('s', 0)
-        
-        // capturer.start()
+        colWidth = width / cols
+        rowHeight = height / rows
+
+        for (let i = 0; i < 1000; i++) {
+          let x = random(width)+width
+          let y = random(height)
+          parts.push(createVector(x, y))
+          parts[i].radius = random(4, diameter) //diameter // random(diameter)
+          parts[i].alpha  = random(60, 200)
+          parts[i].face = imgs[floor(random(imgs.length))]
+          diameter -= 2
+        }
+
       }
-
-      let dots = []
 
       function draw() {
-        console.log('heeee')
-        v.input();
-        background(v.background)
-        animate()
+        v.input()
 
-        for (let i = v.s; i < width + v.r; i += v.n) {
-          let x = i
-          let y = height / 2 + sin(i * v.t) * v.h
-          const r = v.r
-          circle(x, y, r)
+        t += v.rate
+        for (let i = 0; i < v.particles; i++) {
+          const part = parts[i]
+          if (part.dead) continue
+          const col = floor(part.x / width * cols)
+          const row = floor(part.y / height * rows)
+          const angle = map(noise((col << 8) | row, i*2, t), 0, 1, 0, 2 * PI)
+          const vec = p5.Vector.fromAngle(angle)
+          vec.mult(v.force)
+          part.add(vec)
+
+          // if (part.x < 0) {
+          //   if (random() < .75) part.dead = true
+          //   else part.x += width
+          // }
+          // else if (part.x > width) part.x -= width
+          // if (part.y < 0) part.y += height
+          // else if (part.y > height) part.y -= height
+          stroke(0,0,0,part.alpha)
+          // part.radius -= .05
+          if (part.radius <= 0) part.dead = true
+          circle(part.x, part.y, part.radius)
+          image(
+            part.face,
+            part.x - part.radius / 2 + 2,
+            part.y - part.radius / 2 + 2,
+            part.radius - 2,
+            part.radius - 2,
+          )
         }
-        frame++
-        let frameStr = frame.toString()
-        while (frameStr.length < 4) {
-          frameStr = '0' + frameStr
-        }
-        saveCanvas('sin_' + frameStr, 'png')
-        let wait = Date.now() + 100
-        while (Date.now() < wait) {}
       }
 
-      function render() {
-        requestAnimationFrame(draw)
-        // capturer.capture(canvas)
-        capturer.capture(document.getElementById('defaultCanvas0'))
-      }
-      render()
-
-      function animate() {
-        v.s += v.rate
-        v.n += v.rate
-        if (v.n < 1.258) {
-          v.r += v.rate * 100
-        } else {
-          v.r -= v.rate * 100
+      function keyPressed() {
+        if (key === 's') {
+          saveCanvas(`${seed}`, 'png')
         }
       }
     </script>
