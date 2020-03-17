@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="p5.min.js"></script>
+    <script src="ccapture.all.min.js"></script>
     <script src="keycontrol.js"></script>
     <title>Generative Art</title>
   </head>
@@ -11,50 +12,71 @@
     <div id="links"></div>
     <script>
 
+      const capturer = new CCapture({ format: 'webm', framerate: 30, verbose:false })
+      function keyPressed() {
+        console.log('stop')
+        // capturer.stop()
+        // capturer.save()
+      }
+
       let forward = true
       let segment, mid
+      let canvas
+      let frame = 0
 
       function setup() {
-        createCanvas(PI * 200, 200);
+        canvas = createCanvas(PI * 200, 200);
 
 
         v.add('background', 200)
         v.add('h', 40)
         v.add('rate', 0.0001)
-        v.add('n', 1.1023, -4, {min: 0.001})
-        v.add('max', 1.109, -4)
-        v.add('min', 1.0958, -4)
-        v.add('t', 1.9, -1)
+        v.add('n', 1.185, -4, {min: 0.001})
+        v.add('t', 5, -1)
         v.add('r', 10)
-        v.add('forw', 0)
+        v.add('s', 0)
+        
+        // capturer.start()
       }
+
       let dots = []
+
       function draw() {
+        console.log('heeee')
         v.input();
         background(v.background)
         animate()
 
-        for (let i = 0; i < width + v.r; i += v.n) {
+        for (let i = v.s; i < width + v.r; i += v.n) {
           let x = i
-          if (!forward) x = width - x
           let y = height / 2 + sin(i * v.t) * v.h
           const r = v.r
           circle(x, y, r)
         }
+        frame++
+        let frameStr = frame.toString()
+        while (frameStr.length < 4) {
+          frameStr = '0' + frameStr
+        }
+        saveCanvas('sin_' + frameStr, 'png')
+        let wait = Date.now() + 100
+        while (Date.now() < wait) {}
       }
 
-      function animate() {
-        if (forward) {
-          v.n += v.rate
-        } else {
-          v.n -= v.rate
-        }
+      function render() {
+        requestAnimationFrame(draw)
+        // capturer.capture(canvas)
+        capturer.capture(document.getElementById('defaultCanvas0'))
+      }
+      render()
 
-        if (v.n > v.max) {
-          forward = false
-        }
-        if (v.n < v.min) {
-          forward = true
+      function animate() {
+        v.s += v.rate
+        v.n += v.rate
+        if (v.n < 1.258) {
+          v.r += v.rate * 100
+        } else {
+          v.r -= v.rate * 100
         }
       }
     </script>
