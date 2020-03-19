@@ -12,7 +12,10 @@
     <div id="links"></div>
     <script>
 
+      let recording = false
+      let file = 0
       let seed = Date.now()
+      seed = 1584589142348
       
       let rows = 16
       let cols = 16
@@ -30,9 +33,9 @@
       let diameter = 60
 
       function preload() {
-        imgs.push(loadImage('assets/ooo.png'))
         imgs.push(loadImage('assets/troll.png'))
         imgs.push(loadImage('assets/tongue.png'))
+        imgs.push(loadImage('assets/ooo.png'))
       }
 
       function setup() {
@@ -90,11 +93,19 @@
             part.radius - 2,
           )
         }
+
+        let filename = file.toString()
+        while (filename.length < 4) filename = '0' + filename
+        if (recording) saveCanvas(filename, 'png')
+        file++
+        setTimeout(() => loop(), 100)
+        noLoop()
       }
 
       function keyPressed() {
         if (key === 's') {
-          saveCanvas(`${seed}`, 'png')
+          // saveCanvas(`${seed}`, 'png')
+          recording = false
         }
       }
     </script>
