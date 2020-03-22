@@ -9,6 +9,8 @@ let v
         this.repeatKeystrokeTime = 32
         this.isEnteringValue = false
         this.valueBuffer = ''
+        this.mouseX = null
+        this.mouseCurVal = null
 
         const getCurOpt = () => this.vars[this.cur].opt
         const getCurKey = () => this.vars[this.cur].key
@@ -157,6 +159,23 @@ let v
             } else {
                 this.cooldown = 0
                 this.lastKey = null
+            }
+
+            if (mouseIsPressed) {
+                if (this.mouseX === null) {
+                    this.mouseX = mouseX
+                    this.mouseCurVal = getCurVal()
+                }
+                let diff = mouseX - this.mouseX
+                diff = floor(diff / 10)
+                const nextVal = this.mouseCurVal + diff * getCurIncPow10()
+                if (nextVal !== getCurVal()) {
+                    setCurVal(nextVal)
+                    print()
+                }
+            } else {
+                this.mouseX = null
+                this.mouseCurVal = null
             }
         }
     }
