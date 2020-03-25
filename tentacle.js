@@ -33,7 +33,7 @@ function drawTentacle(x, y, d, d2, seed) {
 
 function setup() {
     createCanvas(500, 500)
-    v.add('nuzz', 1, -2)
+    v.add('nuzz', 3, -2)
     v.add('framerate', .01, -3)
     
 }
