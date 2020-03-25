@@ -47,24 +47,38 @@ function drawTentacle(x, y, d, d2, seed) {
         _d -= 1
     }
 
-    for (let n = backside.length - 1; n >= 0; n--) {
-        const c = backside[n]
-        circle(c._x, c._y, c._d)
-    }
-    
+    backside = backside.reverse()
+
     _x = x + 3
     _y = y
     _d = d
     _dir = dir + PI
     i += 1000
 
+
     while (_d > d2) {
         i++
         _dir += (noise(i, frame) - 0.5) * v.nuzz
         _x = _x + cos(_dir) * length//* (i+1) 
         _y = _y + sin(_dir) * length//* (i+1) 
-        circle(_x, _y, _d)
+        backside.push({_x, _y, _d})
+        // circle(_x, _y, _d)
         _d -= 1
+    }
+
+    let highestY = 0
+    const start = floor(backside.length * .4)
+    const end = floor(backside.length * .6)
+    for (let n = start; n < end; n++) {
+        const c = backside[n]
+        // circle(c._x, c._y, c._d)
+        highestY = max(highestY, c._y)
+    }
+
+    let yDiff = highestY - y
+    for (let n = 0; n < backside.length; n++) {
+        const c = backside[n]
+        circle(c._x, c._y - yDiff, c._d)
     }
 }
 
