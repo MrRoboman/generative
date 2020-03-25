@@ -8,6 +8,8 @@ function drawTentacle(x, y, d, d2, seed) {
     stroke(254,1,90, 130)
     fill(255)
     i = 0
+    let _x = x
+    let _y = y
     let _dir = dir
     while (d > d2) {
         let ring = rings[i++]
@@ -21,9 +23,9 @@ function drawTentacle(x, y, d, d2, seed) {
             rings.push(ring)
         }
         const length = 3
-        _dir += (noise(i, frame) - 0.5) * v.nuzz
-        const _x = x + cos(_dir) * (i+1) * length
-        const _y = y + sin(_dir) * (i+1) * length
+        _dir += (noise(frame) - 0.5) * v.nuzz
+        _x = _x + cos(_dir) * length//* (i+1) 
+        _y = _y + sin(_dir) * length//* (i+1) 
         circle(_x, _y, d)
         d -= 1
     }
@@ -31,7 +33,7 @@ function drawTentacle(x, y, d, d2, seed) {
 
 function setup() {
     createCanvas(500, 500)
-    v.add('nuzz', .01, -2)
+    v.add('nuzz', 1, -2)
     v.add('framerate', .002, -3)
     
 }
