@@ -3,39 +3,14 @@ let dir = 0
 let ground = []
 
 function drawWorm() {
-    let x = width / 2
-    let y = height / 2
-    let d = 50
-    let rings = []
+    let x = width * 0.75
+    let y = height * 0.25
+    let maxDiameter = 50
 
-    let _x = x
-    let _y = y
-    let _d = d
-    for (let i = d; i > 0; i--) {
-        rings.push({
-            x: x + cos(-PI/5) * (d - i) * 3,
-            y: y + sin(-PI/5) * (d - i) * 3,
-            d: i,
-        })
-        ground.push(y + sin(-PI/5) * (d - i) * 3)
+    for (let i = 0.04; i < PI - 0.04; i += v.n) {
+        const _y = (noise(i, frame) - 0.5)
+        circle(x + i * v.x, y + i * v.y + _y * 300, sin(i) * maxDiameter)
     }
-
-    rings = rings.reverse()
-    ground = ground.reverse()
-
-    for (let i = d; i > 0; i--) {
-        rings.push({
-            x: x + cos(PI-(PI/8)) * (d - i) * 3,
-            y: y + sin(PI-(PI/8)) * (d - i) * 4,
-            d: i,
-        })
-        ground.push(y + sin(PI-(PI/8)) * (d - i) * 4)
-    }
-
-    // for (let i = 0; i < rings.length; i++) {
-    //     const {x, y, d} = rings[i]
-    //     circle(x, y, d)
-    // }
 }
 
 function drawTentacle(x, y, d, d2, seed) {
@@ -99,6 +74,9 @@ function setup() {
     strokeWeight(3)
     stroke(254,1,90, 130)
     fill(255)
+    v.add('x', -75)
+    v.add('y', 45)
+    v.add('n', .04, -3, {min: .001})
     v.add('g', 1, -3)
     v.add('nuzz', 1.7, -2)
     v.add('framerate', .01, -3)
@@ -109,6 +87,7 @@ function draw() {
     v.input()
     frame += v.framerate
     background(255)
-    drawTentacle(width * .5, height * .5, 60, 1)
+    drawWorm()
+    // drawTentacle(width * .5, height * .5, 60, 1)
     // noLoop()
 }
