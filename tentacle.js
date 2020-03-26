@@ -44,6 +44,7 @@ function drawTentacle(x, y, d, d2, seed) {
     let _x = x
     let _y = y
     let _d = d
+    let _g
     let _dir = dir
     const length = 3
 
@@ -52,8 +53,8 @@ function drawTentacle(x, y, d, d2, seed) {
         _dir += (noise(i, frame) - 0.5) * v.nuzz
         _x = _x + cos(_dir) * length//* (i+1) 
         _y = _y + sin(_dir) * length//* (i+1) 
-        // circle(_x, _y, d)
-        backside.push({_x, _y, _d})
+        _g = y - i * v.g
+        backside.push({_x, _y, _d, _g})
         _d -= 1
     }
 
@@ -62,8 +63,8 @@ function drawTentacle(x, y, d, d2, seed) {
     _x = x + 3
     _y = y
     _d = d
+    i = 0
     _dir = dir + PI
-    // i += 1000
 
 
     while (_d > d2) {
@@ -71,26 +72,25 @@ function drawTentacle(x, y, d, d2, seed) {
         _dir += (noise(i+1000, frame) - 0.5) * v.nuzz
         _x = _x + cos(_dir) * length//* (i+1) 
         _y = _y + sin(_dir) * length//* (i+1) 
-        backside.push({_x, _y, _d})
-        // circle(_x, _y, _d)
+        _g = y + i * v.g
+        backside.push({_x, _y, _d, _g})
         _d -= 1
     }
 
-    let highestY = 0
-    const start = floor(backside.length * 0)
-    const end = floor(backside.length * 1)
+    let furthestDown = {i: -1, diff: 0}
+    const start = floor(backside.length * 0.3)
+    const end = floor(backside.length * 0.7)
     for (let n = start; n < end; n++) {
         const c = backside[n]
-        // circle(c._x, c._y, c._d)
-        highestY = max(highestY, c._y)
+        if (furthestDown.diff < c._y - c._g) {
+            furthestDown.i = n
+            furthestDown.diff = c._y - c._g
+        }
     }
 
-    let yDiff = highestY - y
     for (let n = 0; n < backside.length; n++) {
         const c = backside[n]
-        let Y = min(c._y, ground[n])
-        console.log(Y)
-        circle(c._x, Y, c._d)
+        circle(c._x, min(c._y, c._g), c._d)
     }
 }
 
@@ -99,6 +99,7 @@ function setup() {
     strokeWeight(3)
     stroke(254,1,90, 130)
     fill(255)
+    v.add('g', 1, -3)
     v.add('nuzz', 1.7, -2)
     v.add('framerate', .01, -3)
     drawWorm()
