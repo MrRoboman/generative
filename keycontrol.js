@@ -10,6 +10,11 @@ let v
         this.isEnteringValue = false
         this.valueBuffer = ''
 
+        // Capture images
+        this.frame = 0
+        this.isCapturing = false
+        this.captureDelay = 200
+
         const getCurOpt = () => this.vars[this.cur].opt
         const getCurKey = () => this.vars[this.cur].key
         const getCurVal = () => this[getCurKey()]
@@ -38,6 +43,32 @@ let v
         this.add = (key, val, inc = 0, opt = {}) => {
             Object.defineProperty(this, key, { value: val, writable: true })
             this.vars.push({ key, inc, opt })
+        }
+
+        this.startCapture = () => {
+            this.frame = 0
+            this.isCapturing = true
+            console.log('Capture started')
+        }
+
+        this.stopCapture = () => {
+            this.isCapturing = false
+            console.log('Capture stopped')
+        }
+
+        this.capture = (canvas) => {
+            if (this.isCapturing) {
+                saveCanvas(canvas, `frame${this.frameAsFourDigitString()}`, 'png')
+                this.frame++
+                noLoop()
+                setTimeout(() => loop(), this.captureDelay)
+            }
+        }
+
+        this.frameAsFourDigitString = () => {
+            let frame = this.frame.toString()
+            while (frame.length < 4) frame = '0' + frame
+            return frame
         }
 
         this.input = () => {
@@ -149,7 +180,11 @@ let v
                             break
                         }
                         case 67: { // c
-                            // saveCanvas('art', 'png')
+                            if (this.isCapturing) {
+                                this.stopCapture()
+                            } else {
+                                this.startCapture()
+                            }
                             break
                         }
                     }
