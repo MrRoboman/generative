@@ -5,11 +5,14 @@ let zOff = 0
 let cols, rows
 let flowfield
 let particleCount = 10000
+let origin
 
 let particles = []
 
 function setup() {
     canvas = createCanvas(500, 500)
+
+    origin = createVector(width/2, height/2)
 
     cols = floor(width / scl)
     rows = floor(height / scl)
@@ -19,9 +22,31 @@ function setup() {
     for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle(random(width), random(height)))
     }
+
+    // for (let i = 0; i < particleCount; i++) {
+    //     const particle = new Particle(width/2, height/2)
+    //     particle.vel.x = 1
+    //     particle.vel.rotate(random(TWO_PI))
+    //     particles.push(particle)
+    // }
 }
 
 function draw() {
+    phase1()
+    // stroke(0, 80, 13, 10)
+    // strokeWeight(1)
+    // noFill()
+    // // circle(250, 250, 20)
+    // particles.forEach(p => {
+    //     p.move(createVector(0,0))
+    //     if (p.pos.dist(origin) >= 80) {
+    //         p.alive = false
+    //     }
+    // })
+    // particles.forEach(p => p.draw())
+}
+
+function phase1() {
     stroke(160, 0, 0, 10)
     strokeWeight(1)
     let yOff = 0
@@ -31,7 +56,6 @@ function draw() {
             // const angle = noise(xOff, yOff, zOff) * TWO_PI * 4
             // const angle = createVector(x * scl, y * scl).angleBetween(createVector(width/2, height/2))
             // const vector = p5.Vector.fromAngle(angle)
-            const origin = createVector(width/2, height/2)
             const vec = createVector(x*scl, y*scl)
             const vector = createVector(origin.x - vec.x, origin.y - vec.y)
             const dist = vec.dist(origin) * .1
@@ -58,20 +82,16 @@ function draw() {
         p.follow(flowfield)
     })
     particles.forEach(p => p.draw())
-    
-    stroke(0, 80, 13)
-    strokeWeight(10)
-    noFill()
-    // circle(250, 250, 20)
-}
 
+}
 
 function Particle(x, y) {
     this.pos = createVector(x, y)
     this.vel = createVector(0, 0)
     this.maxVel = 2
     this.prevPos = this.pos.copy()
-    this.endOfLife = Date.now() + random(3000)
+    this.alive = true
+    this.endOfLife = Date.now() + random(2000)
 
     this.updatePrevPos = () => {
         this.prevPos = this.pos.copy()
@@ -86,11 +106,17 @@ function Particle(x, y) {
     }
 
     this.move = (force) => {
+        if (!this.alive) {
+            return
+        }
         this.vel.add(force)
         this.vel.limit(this.maxVel)
         this.updatePrevPos()
         this.pos.add(this.vel)
         this.wrap()
+        if (Date.now() >= this.endOfLife) {
+            this.alive = false
+        }
     }
 
     this.wrap = () => {
@@ -114,8 +140,9 @@ function Particle(x, y) {
 
     this.draw = () => {
         // circle(this.pos.x, this.pos.y, 1)
-        if (Date.now() < this.endOfLife) {
-            line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y)
+        if (!this.alive) {
+            return
         }
+        line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y)
     }
 }
