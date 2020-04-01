@@ -112,6 +112,19 @@ function keyPressed() {
 
 function setup() {
     canvas = createCanvas(500, 500)
+    document.getElementById('canvas').appendChild(canvas.elt)
+
+    // const slider = createSlider(10, 20, 15)
+    // document.getElementById('fart').appendChild(slider.elt)
+
+    const ff = document.createElement('flow-slider')
+    ff.setAttribute('label', 'a label')
+    ff.setAttribute('min', 50)
+    ff.setAttribute('max', 100)
+    ff.setAttribute('value', 50)
+    ff.setAttribute('step', .1)
+    // ff.setAttribute('slider', slider)
+    document.getElementById('slider-container').appendChild(ff)
 
     seed = floor(random(10000))
     // seed = 7565
@@ -136,7 +149,7 @@ function draw() {
         layer.updateParticles()
         layer.draw()
     })
-    // noLoop()
+    noLoop()
 }
 
 
