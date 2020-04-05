@@ -1,10 +1,8 @@
 const template = document.createElement('template')
 template.innerHTML = `
     <style>
-        div {
-            display: inline-block;
-        }
         #label {
+            display: inline-block;
             width: 100px;
             text-align: right;
             font-family: roboto, sans-serif;
@@ -31,6 +29,7 @@ class FlowSlider extends HTMLElement {
     }
 
     connectedCallback() {
+        this.name = this.getAttribute('label')
         this.min = this.getAttribute('min')
         this.max = this.getAttribute('max')
         this.value = this.getAttribute('value')
@@ -58,13 +57,24 @@ class FlowSlider extends HTMLElement {
         this.textInput.removeEventListener('blur', this.onBlurTextInput)
     }
 
+    set inputCallback(callback) {
+        this._inputCallback = callback
+    }
+
+    get inputCallback() {
+        return this._inputCallback
+    }
+
     onSliderInput = e => {
-        this.textInput.value = e.target.value
+        this.value = parseFloat(e.target.value)
+        this.textInput.value = this.value
+        this._inputCallback(this.name, this.value)
     }
 
     onTextInputInput = e => {
-        this.value = Math.max(this.min, Math.min(this.max, e.target.value))
+        this.value = Math.max(this.min, Math.min(this.max, parseFloat(e.target.value)))
         this.slider.value = this.value
+        this._inputCallback(this.name, this.value)
     }
 
     onKeydownTextInput = e => {
@@ -74,9 +84,10 @@ class FlowSlider extends HTMLElement {
     }
 
     onBlurTextInput = e => {
-        this.value = Math.max(this.min, Math.min(this.max, e.target.value))
+        this.value = Math.max(this.min, Math.min(this.max, parseFloat(e.target.value)))
         this.slider.value = this.value
         this.textInput.value = this.value
+        this._inputCallback(this.name, this.value)
     }
 }
 window.customElements.define('flow-slider', FlowSlider)
