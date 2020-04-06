@@ -1,6 +1,12 @@
-console.log('hello')
-const config = {
+const initialConfig = {
     sliders: [
+        {
+            label: 'seed',
+            min: 1,
+            max: 1000000000,
+            value: 1000,
+            step: 1,
+        },
         {
             label: 'particleCount',
             min: 1,
@@ -19,14 +25,14 @@ const config = {
             label: 'cols',
             min: 1,
             max: 100,
-            value: 20,
+            value: 6,
             step: 1,
         },
         {
             label: 'rows',
             min: 1,
             max: 100,
-            value: 20,
+            value: 6,
             step: 1,
         },
         {
@@ -65,6 +71,13 @@ const config = {
             step: 0.1,
         },
         {
+            label: 'hueRate',
+            min: -.001,
+            max: .001,
+            value: .0005,
+            step: .0001,
+        },
+        {
             label: 'hue',
             min: 0,
             max: 360,
@@ -96,7 +109,7 @@ const config = {
             label: 'frame',
             min: 0,
             max: 10000,
-            value: 40,
+            value: 500,
             step: 1,
         },
     ],

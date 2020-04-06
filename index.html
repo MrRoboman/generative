@@ -3,16 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      #canvas-container {
+        display: flex;
+        justify-content: center;
+      }
+      /* #slider-container {
+        display: flex;
+        align-content: center;
+        flex-direction: column;
+      } */
+    </style>
     <script src="p5.min.js"></script>
     <script src="keycontrol.js"></script>
     <title>Generative Art</title>
   </head>
   <body>
     <div id="savecontainer"></div>
-    <div id="canvas"></div>
+    <div id="canvas-container"></div>
     <div id="slider-container"></div>
-    <script src="flowConfig.js?Date.now()"></script>
-    <script src="controlpanel.js?Date.now()"></script>
-    <script src="flowfield.js?Date.now()"></script>
+    <script src="config.js"></script>
+    <script src="controlpanel.js"></script>
+    <script src="flowfield.js"></script>
   </body>
 </html>

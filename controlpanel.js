@@ -11,6 +11,13 @@ template.innerHTML = `
             width: 50px;
             text-align: center;
         }
+        .flow-slider {
+            display: flex;
+            width: 50%;
+        }
+        #slider {
+            flex-grow: 1;
+        }
     </style>
     <div class="flow-slider">
         <div id="label"></div>
@@ -55,6 +62,16 @@ class FlowSlider extends HTMLElement {
         this.textInput.removeEventListener('input', this.onTextInputInput)
         this.textInput.removeEventListener('keydown', this.onKeydownTextInput)
         this.textInput.removeEventListener('blur', this.onBlurTextInput)
+    }
+
+    set val(value) {
+        this.value = value
+        this.textInput.value = value
+        this.slider.value = value
+    }
+
+    get val() {
+        return this.value
     }
 
     set inputCallback(callback) {
