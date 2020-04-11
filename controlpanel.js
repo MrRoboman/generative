@@ -61,7 +61,6 @@ class FlowSlider extends HTMLElement {
         this.slider.removeEventListener('input', this.onSliderInput)
         this.textInput.removeEventListener('input', this.onTextInputInput)
         this.textInput.removeEventListener('keydown', this.onKeydownTextInput)
-        this.textInput.removeEventListener('blur', this.onBlurTextInput)
     }
 
     set val(value) {

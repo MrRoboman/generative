@@ -5,10 +5,13 @@ let saves
 let storage
 let savedConfigs
 let frame
+let frameSpan
 let field
 let sliders = {}
 let particles = []
 let __ = {}
+
+let hue
 
 function getLocalStorage(key) {
     return JSON.parse(localStorage.getItem(key))
@@ -74,9 +77,26 @@ function initSaveStuff() {
 }
 
 function createSaveButton() {
-    const btn = createButton('Save')
+    let btn = createButton('Save')
     btn.mousePressed(saveConfig)
     document.getElementById('slider-container').appendChild(btn.elt)
+
+    btn = createButton('Stop')
+    btn.mousePressed(() => {
+        noLoop()
+        frameSpan.elt.innerText = frame
+    })
+    document.getElementById('slider-container').appendChild(btn.elt)
+
+    btn = createButton('Snap')
+    btn.mousePressed(() => {
+        noLoop()
+        save()
+    })
+    document.getElementById('slider-container').appendChild(btn.elt)
+    
+    frameSpan = createSpan()
+    document.getElementById('slider-container').appendChild(frameSpan.elt)
 }
 
 function createSliders() {
@@ -96,6 +116,7 @@ function createSliders() {
 
 function reset() {
     frame = 0
+    hue = __.hue
     randomSeed(__.seed)
     noiseSeed(__.seed)
     background(0)
@@ -105,10 +126,7 @@ function reset() {
         if (i === particles.length) {
             particles.push(new Particle(x, y))
         } else {
-            particles[i].pos.x = x
-            particles[i].pos.y = y
-            particles[i].vel.x = 0
-            particles[i].vel.y = 0
+            particles[i].reset()
         }
     }
     loop()
@@ -124,7 +142,8 @@ function update() {
         if (!vector) {
             const xNoise = col * __.xNoiseStep
             const yNoise = row * __.yNoiseStep
-            const zNoise = frame * __.zNoiseStep
+            const zNoiseStep = (abs(250 - p.pos.x) / 250) * __.zNoiseStep
+            const zNoise = frame * zNoiseStep
             const angle = noise(xNoise, yNoise, zNoise) * __.maxAngle
             vector = p5.Vector.fromAngle(angle)
             vector.setMag(__.flowForce)
@@ -132,14 +151,13 @@ function update() {
         }
         p.move(vector)
 
-        // let nextHue = __.hue + __.hueRate
-        // if (nextHue < 0) {
-        //     nextHue = 360
-        // } else if (nextHue > 360) {
-        //     nextHue = 0
-        // }
-        // update__('hue', nextHue, false)
-        stroke(__.hue, __.saturation, __.brightness, __.alpha)
+        hue += __.hueRate || 0
+        if (hue < 0) {
+            hue = 360
+        } else if (hue > 360) {
+            hue = 0
+        }
+        stroke(hue, __.saturation, __.brightness, __.alpha)
         p.draw()
     }
 }
@@ -155,6 +173,7 @@ function setup() {
     update__('seed', floor(random(1000000000)))
 
     colorMode(HSB)
+    hue = __.hue
     reset()
 }
 
@@ -170,6 +189,34 @@ function Particle(x, y) {
     this.vel = createVector(0, 0)
     this.prevPos = this.pos.copy()
     this.endOfLife = Date.now() + random(3000)
+    this.alive = true
+
+    this.reset = () => {
+        // const ratio = ((frame + 100) / __.frame) * width
+        // this.pos.x = width/2 - ratio/2 + random(ratio)
+        // this.pos.y = height/2 - ratio/2 + random(ratio)
+        switch(floor(random(4))) {
+            case 0:
+                this.pos.x = 0
+                this.pos.y = random(height)
+                break
+            case 1:
+                this.pos.x = width
+                this.pos.y = random(height)
+                break
+            case 2:
+                this.pos.x = random(width)
+                this.pos.y = 0
+                break
+            case 3:
+                this.pos.x = random(width)
+                this.pos.y = height
+                break
+        }
+        this.vel.x = 0
+        this.vel.y = 0
+        this.alive = true
+    }
 
     this.updatePrevPos = () => {
         this.prevPos = this.pos.copy()
@@ -186,27 +233,29 @@ function Particle(x, y) {
     this.wrap = () => {
         if (this.pos.x < 0) {
             this.pos.x += width
+            this.reset()
             this.updatePrevPos()
         }
         if (this.pos.x > width) {
             this.pos.x -= width
+            this.reset()
             this.updatePrevPos()
         }
         if (this.pos.y < 0) {
             this.pos.y += height
+            this.reset()
             this.updatePrevPos()
         }
         if (this.pos.y > height) {
             this.pos.y -= height
+            this.reset()
             this.updatePrevPos()
         }
     }
 
     this.draw = () => {
-        // circle(this.pos.x, this.pos.y, 1)
-        // if (Date.now() < this.endOfLife) {
-            
+        if (this.alive) {
             line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y)
-        // }
+        }            
     }
 }

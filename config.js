@@ -74,7 +74,7 @@ const initialConfig = {
             label: 'hueRate',
             min: -.001,
             max: .001,
-            value: .0005,
+            value: 0,
             step: .0001,
         },
         {
@@ -109,7 +109,7 @@ const initialConfig = {
             label: 'frame',
             min: 0,
             max: 10000,
-            value: 500,
+            value: 2000,
             step: 1,
         },
     ],
